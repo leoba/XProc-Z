@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:svg="http://www.w3.org/2000/svg"
+    xmlns:tei="http://www.tei-c.org/ns/1.0"
     xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
     xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
@@ -26,17 +27,18 @@
         </xsl:copy>
     </xsl:template>
 
-    <xsl:variable name="idno" select="$manuscript/@idno"/>
     
-    <xsl:variable name="image-list-spreadsheet" select="/manuscript-and-images/ss:Workbook"/>
+    <xsl:variable name="image-list-spreadsheet-excel" select="/manuscript-and-images/ss:Workbook"/>
+    <!--<xsl:variable name="image-list-spreadsheet-tei" select="/manuscript-and-images/tei:TEI"/>-->
     <xsl:variable name="manuscript" select="/manuscript-and-images/manuscript"/>
+    
     
     <xsl:template match="manuscript-and-images">
     	<xsl:apply-templates select="manuscript"/>
     </xsl:template>
 
     <xsl:template match="manuscript">
-        <manuscript idno="{$idno}" msname="{@msname}" msURL="{@msURL}">
+        <manuscript idno="{@idno}" msname="{@msname}" msURL="{@msURL}">
 
             <xsl:for-each select="quire">
                 <quire>
@@ -51,6 +53,7 @@
                     </units>
                 </quire>
             </xsl:for-each>
+            <xsl:call-template name="copy"/>
         </manuscript>
     </xsl:template>
 
@@ -92,14 +95,21 @@
             <xsl:variable name="the_folNo">
                 <xsl:value-of select="@folNo"/>
             </xsl:variable>
-            <xsl:if test="$image-list-spreadsheet//ss:Row/ss:Cell/ss:Data/$the_folNo"> <!--test="ancestor::quires/tei:facsimile/tei:surface[@n=$the_folNo]"-->
+            <xsl:if test="$image-list-spreadsheet-excel//ss:Row/ss:Cell/ss:Data/$the_folNo"> <!--test="ancestor::quires/tei:facsimile/tei:surface[@n=$the_folNo]"-->
                 <xsl:attribute name="url">
                     <!--<xsl:value-of
                         select="document(concat($idno,'-imageList.xml'))//ss:Row/ss:Cell/ss:Data/$the_folNo/../following-sibling::ss:Cell[1]/ss:Data[1]/text()"/>-->
                     <xsl:value-of
-                        select="$image-list-spreadsheet//ss:Row/ss:Cell/ss:Data[text()=$the_folNo]/../following-sibling::ss:Cell[1]/ss:Data[1]/text()"/>
+                        select="$image-list-spreadsheet-excel//ss:Row/ss:Cell/ss:Data[text()=$the_folNo]/../following-sibling::ss:Cell[1]/ss:Data[1]/text()"/>
                 </xsl:attribute>
             </xsl:if>
+            <!--<xsl:if test="$image-list-spreadsheet-tei//tei:surface/@n=$the_folNo">--> 
+            <!--<xsl:for-each select="$image-list-spreadsheet-tei//tei:surface[@n=$the_folNo]/tei:graphic/@url"><xsl:if test="contains(.,'web')">
+                <xsl:attribute name="url">
+                    <xsl:value-of
+                        select="concat($tei-prefix,.)"/>
+                </xsl:attribute>
+            </xsl:if></xsl:for-each>-->
             <xsl:if test="@mode='missing'">
                 <xsl:attribute name="url">https://raw.githubusercontent.com/leoba/VisColl/master/data/support/images/x.jpg</xsl:attribute>
             </xsl:if>
@@ -126,14 +136,21 @@
             <xsl:variable name="the_folNo">
                 <xsl:value-of select="@folNo"/>
             </xsl:variable>
-            <xsl:if test="$image-list-spreadsheet//ss:Row/ss:Cell/ss:Data/$the_folNo"> <!--test="ancestor::quires/tei:facsimile/tei:surface[@n=$the_folNo]"-->
+            <xsl:if test="$image-list-spreadsheet-excel//ss:Row/ss:Cell/ss:Data/$the_folNo"> <!--test="ancestor::quires/tei:facsimile/tei:surface[@n=$the_folNo]"-->
                 <xsl:attribute name="url">
                     <!--<xsl:value-of
                         select="document(concat($idno,'-imageList.xml'))//ss:Row/ss:Cell/ss:Data/$the_folNo/../following-sibling::ss:Cell[1]/ss:Data[1]/text()"/>-->
                     <xsl:value-of
-                        select="$image-list-spreadsheet//ss:Row/ss:Cell/ss:Data[text()=$the_folNo]/../following-sibling::ss:Cell[1]/ss:Data[1]/text()"/>
+                        select="$image-list-spreadsheet-excel//ss:Row/ss:Cell/ss:Data[text()=$the_folNo]/../following-sibling::ss:Cell[1]/ss:Data[1]/text()"/>
                 </xsl:attribute>
             </xsl:if>
+            <!--<xsl:if test="$image-list-spreadsheet-tei//tei:surface/@n=$the_folNo">--> 
+            <!--<xsl:for-each select="$image-list-spreadsheet-tei//tei:surface[@n=$the_folNo]/tei:graphic/@url"><xsl:if test="contains(.,'web')">
+                <xsl:attribute name="url">
+                    <xsl:value-of
+                        select="concat($tei-prefix,.)"/>
+                </xsl:attribute>
+            </xsl:if></xsl:for-each>-->
             <xsl:if test="@mode='missing'">
                 <xsl:attribute name="url">https://raw.githubusercontent.com/leoba/VisColl/master/data/support/images/x.jpg</xsl:attribute>
             </xsl:if>
@@ -143,6 +160,27 @@
         </right>
     </xsl:template>
 
-
+    <xsl:template name="test" match="//quireCopy">
+        <xsl:for-each select=".">
+            <xsl:apply-templates/>
+        </xsl:for-each>
+    </xsl:template>
+    
+    <xsl:template name="copy">
+        <xsl:for-each select="//quireCopy">
+            <quireCopy>
+                <xsl:attribute name="n">
+                    <xsl:value-of select="@n"/>
+                </xsl:attribute>
+                <xsl:variable name="positions" select="@positions"/>
+                <xsl:attribute name="positions">
+                    <xsl:value-of select="$positions"/>
+                </xsl:attribute>
+                
+                    <xsl:call-template name="test"/>
+                
+            </quireCopy>
+        </xsl:for-each>
+    </xsl:template>
 
 </xsl:stylesheet>
