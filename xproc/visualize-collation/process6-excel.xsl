@@ -29,9 +29,9 @@
 
     
     <xsl:variable name="image-list-spreadsheet-excel" select="/manuscript-and-images/ss:Workbook"/>
-    <!--<xsl:variable name="image-list-spreadsheet-tei" select="/manuscript-and-images/tei:TEI"/>-->
+    <xsl:variable name="image-list-spreadsheet-tei" select="/manuscript-and-images/tei:TEI"/>
     <xsl:variable name="manuscript" select="/manuscript-and-images/manuscript"/>
-    
+    <xsl:param name="tei-prefix"/>
     
     <xsl:template match="manuscript-and-images">
     	<xsl:apply-templates select="manuscript"/>
@@ -104,12 +104,12 @@
                 </xsl:attribute>
             </xsl:if>
             <!--<xsl:if test="$image-list-spreadsheet-tei//tei:surface/@n=$the_folNo">--> 
-            <!--<xsl:for-each select="$image-list-spreadsheet-tei//tei:surface[@n=$the_folNo]/tei:graphic/@url"><xsl:if test="contains(.,'web')">
+            <xsl:for-each select="$image-list-spreadsheet-tei//tei:surface[@n=$the_folNo]/tei:graphic/@url"><xsl:if test="contains(.,'web')">
                 <xsl:attribute name="url">
                     <xsl:value-of
                         select="concat($tei-prefix,.)"/>
                 </xsl:attribute>
-            </xsl:if></xsl:for-each>-->
+            </xsl:if></xsl:for-each>
             <xsl:if test="@mode='missing'">
                 <xsl:attribute name="url">https://raw.githubusercontent.com/leoba/VisColl/master/data/support/images/x.jpg</xsl:attribute>
             </xsl:if>
@@ -145,12 +145,12 @@
                 </xsl:attribute>
             </xsl:if>
             <!--<xsl:if test="$image-list-spreadsheet-tei//tei:surface/@n=$the_folNo">--> 
-            <!--<xsl:for-each select="$image-list-spreadsheet-tei//tei:surface[@n=$the_folNo]/tei:graphic/@url"><xsl:if test="contains(.,'web')">
+            <xsl:for-each select="$image-list-spreadsheet-tei//tei:surface[@n=$the_folNo]/tei:graphic/@url"><xsl:if test="contains(.,'web')">
                 <xsl:attribute name="url">
                     <xsl:value-of
                         select="concat($tei-prefix,.)"/>
                 </xsl:attribute>
-            </xsl:if></xsl:for-each>-->
+            </xsl:if></xsl:for-each>
             <xsl:if test="@mode='missing'">
                 <xsl:attribute name="url">https://raw.githubusercontent.com/leoba/VisColl/master/data/support/images/x.jpg</xsl:attribute>
             </xsl:if>
